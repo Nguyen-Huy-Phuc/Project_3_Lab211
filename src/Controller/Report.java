@@ -1,69 +1,127 @@
 package Controller;
 
+import Model.Student;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
- *
- * @author Nguyễn Huy Phúc
+ * Class responsible for generating reports based on registration files.
  */
 public class Report {
 
-    public void printOutTheRegistrationByStudentID(String studentId) {
-        ArrayList<String> s = new ArrayList();
-        String filenamePattern = studentId + "_*.doc";
-        File[] matchingFiles = getMatchingFiles(filenamePattern);
-        if (matchingFiles.length > 0) {
-            for (File file : matchingFiles) {
+    /**
+     * Prints the registration information for a given student ID.
+     *
+     * @param studentId The ID of the student to generate the report for
+     */
+    public void printRegistrationByStudentId(String studentId) {
+        File directory = new File(System.getProperty("user.dir") + "src/File/");
+        File[] files = directory.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.getName().startsWith(studentId) && file.getName().endsWith(".doc");
+            }
+        });
+
+        if (files != null && files.length > 0) {
+            for (File file : files) {
                 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        s.add(line);
+                        System.out.println("       " + line);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         } else {
-            System.out.println("No registration file found for student ID: " + studentId);
+            System.out.println("   (!) No registration file found for student with ID: " + studentId);
         }
-        this.displayTheRegistrationByStudentID(s);
     }
 
-    public void displayTheRegistrationByStudentID(ArrayList<String> list) {
-        System.out.println(list.size());
-        String[] display = new String[list.size()];
-        int i = 0;
-        for (String s : list) {
-            display[i++] = s;
-        }
-//        System.out.println("                           Aboard Program Registration Form");
-//        System.out.printf("%-20s", "Information Student:\n");
-//        System.out.printf("%-20s%-20s\n", display[1], display[1]);
-//        System.out.printf("%-20s%-20s%-15s%-15s\n", display[2], display[3], display[4], display[5]);
-//        System.out.printf("%-20s%-20s%-20s\n", display[6], display[14], display[15]);
-//        System.out.printf("Information of the aboard program:\n");
-//        System.out.printf("%-20s%-20s\n", display[7], display[8]);
-//        System.out.printf("%-20s%-10s%-15s%-10s\n", display[9], display[10], display[11], display[12]);
-//        System.out.printf("Information of the registration:\n");
-//        System.out.printf("%-20s\n", display[13]);
-
-    }
-
-//    
-    public File[] getMatchingFiles(String filenamePattern) {
-        File folder = new File("File");
-        File[] files = folder.listFiles(new FilenameFilter() {
+    /**
+     * Counts the number of students registered for a given program ID.
+     *
+     * @param programId The ID of the program to count registrations for
+     */
+    public void countStudentsRegisteredForProgram(String programId) {
+        File directory = new File(System.getProperty("user.dir") + "src/File/");
+        File[] files = directory.listFiles(new FileFilter() {
             @Override
-            public boolean accept(File dir, String name) {
-                return name.matches(filenamePattern);
+            public boolean accept(File file) {
+                return file.getName().toLowerCase().contains(programId.toLowerCase()) && file.getName().endsWith(".doc");
             }
         });
-        return files != null ? files : new File[0];
+
+        if (files != null) {
+            int count = files.length;
+            System.out.println("       Number of students registered for program " + programId + ": " + count);
+        } else {
+            System.out.println("   (!) No registrations found for program " + programId);
+        }
+    }
+
+    /**
+     * Checks if registration files exist in the file directory.
+     */
+    public void checkFileExist() {
+        File directory = new File(System.getProperty("user.dir") + "src/File/");
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                System.out.println(file.getName());
+            }
+        }
+    }
+
+    /**
+     * Finds students with multiple registrations.
+     *
+     * @return The student ID(s) with multiple registrations
+     */
+    public String findStudentsWithMultipleRegistrations() {
+        String s = "";
+        File directory = new File(System.getProperty("user.dir") + "src/File/");
+        File[] files = directory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".doc");
+            }
+        });
+
+        if (files != null && files.length > 0) {
+            HashMap<String, Integer> studentProgramCount = new HashMap<>();
+
+            for (File file : files) {
+                String fileName = file.getName();
+                String studentId = fileName.substring(0, fileName.indexOf("_"));
+
+                if (studentProgramCount.containsKey(studentId)) {
+                    int count = studentProgramCount.get(studentId);
+                    studentProgramCount.put(studentId, count + 1);
+                } else {
+                    studentProgramCount.put(studentId, 1);
+                }
+            }
+
+            for (String studentId : studentProgramCount.keySet()) {
+                int programCount = studentProgramCount.get(studentId);
+
+                if (programCount >= 2) {
+                    s = studentId;
+                }
+            }
+        } else {
+            System.out.println("No registration files found.");
+        }
+        return s;
     }
 
 }

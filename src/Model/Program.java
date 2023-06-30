@@ -1,13 +1,17 @@
 package Model;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
- *
- * @author Nguyễn Huy Phúc
+ * Represents a program or course. Each program has an ID, name, time,
+ * registration dates, days, location, cost, and content.
  */
 public class Program {
+
+    private static final String DATE_FORMAT = "dd/MM/yyyy";
+    private static final String REGEX_COST = "#######.##$";
 
     private String id;
     private String name;
@@ -19,6 +23,19 @@ public class Program {
     private String cost;
     private String content;
 
+    /**
+     * Constructs a new Program instance.
+     *
+     * @param id the ID of the program
+     * @param name the name of the program
+     * @param time the time of the program
+     * @param fromRegistrationDate the starting date for registration
+     * @param endRegistrationDate the ending date for registration
+     * @param days the days of the program
+     * @param location the location of the program
+     * @param cost the cost of the program
+     * @param content the content of the program
+     */
     public Program(String id, String name, String time, String fromRegistrationDate, String EndRegistrationDate, String days, String location, String cost, String content) {
         this.id = id;
         this.name = name;
@@ -105,9 +122,16 @@ public class Program {
         this.content = content;
     }
 
+    /**
+     * Formats the Program instance as a string.
+     *
+     * @return the formatted string representation of the Program
+     */
     @Override
     public String toString() {
-        return "Program{" + '}';
+        DecimalFormat df = new DecimalFormat(REGEX_COST);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_FORMAT);
+        return String.format("       %-15s%-25s%-10s%-30s%-30s%-15s%-20s%-10s%-20s\n", id, name, time, dtf.format(fromRegistrationDate), dtf.format(endRegistrationDate), days, location, df.format(Double.parseDouble(cost)), content);
     }
-    
+
 }
