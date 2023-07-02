@@ -1,20 +1,27 @@
 package Viewer;
 
-import Controller.ManageAboardProgram;
-import Controller.ManageStudents;
-import Controller.Register;
-import Controller.Report;
+import Business.ManageAboardProgram;
+import Business.ManageStudents;
+import Business.Register;
+import Business.Report;
 import Model.Program;
 import Model.Student;
 import Tool.Input;
 import Tool.Validation;
+import javax.swing.text.Utilities;
 
 /**
  * The main class of the program.
  */
 public class Main {
 
-    public static void main(String[] args) {
+    /**
+     * The main method of the program.
+     *
+     * @param args command line arguments
+     * @throws Exception if an exception occurs
+     */
+    public static void main(String[] args) throws Exception {
         // Create instances of various controller classes and utility classes
         ManageAboardProgram mp = new ManageAboardProgram();
         ManageStudents ms = new ManageStudents();
@@ -23,6 +30,7 @@ public class Main {
         Menu menu = new Menu();
         Input input = new Input();
         Validation validation = new Validation();
+        Choise choise = new Choise();
 
         // Create instances of sample Program and Student objects
         Program program1 = new Program("P1", "Program 1", "January", "01/07/2023", "05/07/2023", "35", "Location 1", "100", "Program.doc");
@@ -48,7 +56,7 @@ public class Main {
 
         int c = -1;
         do {
-            menu.printMenu();
+            menu.printMenu(choise.getMainMenu());
             String check_ = input.inputString();
             if (!validation.CheckValidateNumber(check_)) {
                 System.out.println("   (!) Try Again");
@@ -58,8 +66,9 @@ public class Main {
                     case 1:
                         // Manage Aboard Programs
                         int c1 = -1;
+                        int checkSaveProgram = 0;
                         do {
-                            menu.printMenuManageAboardPrograms();
+                            menu.printMenu(choise.getManageAboardProgramsMenu());
                             String check1 = input.inputString();
                             if (!validation.CheckValidateNumber(check1)) {
                                 System.out.println("   (!) Try Again");
@@ -67,9 +76,11 @@ public class Main {
                                 c1 = Integer.parseInt(check1);
                                 switch (c1) {
                                     case 1:
+                                        //Display All
                                         mp.DisplaysAllAboardPrograms();
                                         break;
                                     case 2:
+                                        // Add New Program
                                         mp.addNewProgram();
                                         break;
                                     case 3:
@@ -80,7 +91,7 @@ public class Main {
                                         if (checkExistEdit) {
                                             boolean edit = true;
                                             do {
-                                                menu.printMenuEditManageAboardPrograms();
+                                                menu.printMenu(choise.getEditManageAboardProgramsMenu());
                                                 String choose = input.inputString();
                                                 edit = mp.editInformationByID(choose, edit, idEdit);
                                             } while (edit);
@@ -101,19 +112,80 @@ public class Main {
                                         }
                                         break;
                                     case 5:
-                                        System.out.println("       Exit");
+                                        // Save Aboard Program 
+                                        checkSaveProgram = mp.saveFile();
+                                        break;
+                                    case 6:
+                                        // Load Aboard Program
+                                        mp.loadFile();
+                                        break;
+                                    case 7:
+                                        // Back To Main Menu
+                                        if (checkSaveProgram == 0) {
+                                            boolean checkexit1 = true;
+                                            do {
+                                                menu.printMenu(choise.getExitAndSaveMenu());
+                                                String checkexit_ = input.inputString();
+                                                if (!validation.CheckValidateNumber(checkexit_)) {
+                                                    System.out.println("   (!) Try Again");
+                                                } else {
+                                                    int checkexit1_ = Integer.parseInt(checkexit_);
+                                                    switch (checkexit1_) {
+                                                        case 1:
+                                                            checkSaveProgram = mp.saveFile();
+                                                            System.out.println("       Exit");
+                                                            checkexit1 = false;
+                                                            break;
+                                                        case 2:
+                                                            System.out.println("       Exit");
+                                                            checkexit1 = false;
+                                                            break;
+                                                        case 3:
+                                                            c1 = -1;
+                                                            checkexit1 = false;
+                                                            break;
+                                                        default:
+                                                            System.out.println("   (!) Try Again");
+                                                    }
+                                                }
+                                            } while (checkexit1);
+                                        } else {
+                                            boolean checkexit2 = true;
+                                            do {
+                                                menu.printMenu(choise.getExitMenu());
+                                                String checkexit_ = input.inputString();
+                                                if (!validation.CheckValidateNumber(checkexit_)) {
+                                                    System.out.println("   (!) Try Again");
+                                                } else {
+                                                    int checkexit2_ = Integer.parseInt(checkexit_);
+                                                    switch (checkexit2_) {
+                                                        case 1:
+                                                            System.out.println("       Exit");
+                                                            checkexit2 = false;
+                                                            break;
+                                                        case 2:
+                                                            c1 = -1;
+                                                            checkexit2 = false;
+                                                            break;
+                                                        default:
+                                                            System.out.println("   (!) Try Again");
+                                                    }
+                                                }
+                                            } while (checkexit2);
+                                        }
                                         break;
                                     default:
                                         System.out.println("   (!) Try Again");
                                 }
                             }
-                        } while (c1 != 5);
+                        } while (c1 != 7);
                         break;
                     case 2:
                         // Manage Students
+                        int checkSaveStudent = 0;
                         int c2 = -1;
                         do {
-                            menu.printMenuManageStudents();
+                            menu.printMenu(choise.getManageStudentsMenu());
                             String check2 = input.inputString();
                             if (!validation.CheckValidateNumber(check2)) {
                                 System.out.println("   (!) Try Again");
@@ -121,9 +193,11 @@ public class Main {
                                 c2 = Integer.parseInt(check2);
                                 switch (c2) {
                                     case 1:
+                                        //Display All
                                         ms.displayAllStudents();
                                         break;
                                     case 2:
+                                        // Add New Student
                                         ms.addNewStudent();
                                         break;
                                     case 3:
@@ -134,7 +208,7 @@ public class Main {
                                         if (checkExistEdit) {
                                             boolean edit = true;
                                             do {
-                                                menu.printMenuEditManageStudents();
+                                                menu.printMenu(choise.getEditManageStudentsMenu());
                                                 edit = ms.editInformationByID(edit, idEdit);
                                             } while (edit);
                                         } else {
@@ -142,14 +216,75 @@ public class Main {
                                         }
                                         break;
                                     case 4:
-                                        System.out.println("       Exit");
+                                        // Save Student
+                                        checkSaveStudent = ms.saveFile();
+                                        break;
+                                    case 5:
+                                        // Load Student
+                                        ms.loadFile();
+                                        break;
+                                    case 6:
+                                        // Back To Main Menu
+                                        if (checkSaveStudent == 0) {
+                                            boolean checkexit1 = true;
+                                            do {
+                                                menu.printMenu(choise.getExitAndSaveMenu());
+                                                String checkexit_ = input.inputString();
+                                                if (!validation.CheckValidateNumber(checkexit_)) {
+                                                    System.out.println("   (!) Try Again");
+                                                } else {
+                                                    int checkexit1_ = Integer.parseInt(checkexit_);
+                                                    switch (checkexit1_) {
+                                                        case 1:
+                                                            checkSaveStudent = ms.saveFile();
+                                                            System.out.println("       Exit");
+                                                            checkexit1 = false;
+                                                            break;
+                                                        case 2:
+                                                            System.out.println("       Exit");
+                                                            checkexit1 = false;
+                                                            break;
+                                                        case 3:
+                                                            c2 = -1;
+                                                            checkexit1 = false;
+                                                            break;
+                                                        default:
+                                                            System.out.println("   (!) Try Again");
+                                                    }
+                                                }
+                                            } while (checkexit1);
+                                        } else {
+                                            boolean checkexit2 = true;
+                                            do {
+                                                menu.printMenu(choise.getExitMenu());
+                                                String checkexit_ = input.inputString();
+                                                if (!validation.CheckValidateNumber(checkexit_)) {
+                                                    System.out.println("   (!) Try Again");
+                                                } else {
+                                                    int checkexit2_ = Integer.parseInt(checkexit_);
+                                                    switch (checkexit2_) {
+                                                        case 1:
+                                                            System.out.println("       Exit");
+                                                            checkexit2 = false;
+                                                            break;
+                                                        case 2:
+                                                            c2 = -1;
+                                                            checkexit2 = false;
+                                                            break;
+                                                        default:
+                                                            System.out.println("   (!) Try Again");
+                                                    }
+                                                }
+                                            } while (checkexit2);
+                                        }
                                         break;
                                     default:
                                         System.out.println("   (!) Try Again");
                                 }
                             }
-                        } while (c2 != 4);
+                        } while (c2 != 6);
                         break;
+
                     case 3:
                         // Register Student for a Program
                         String programId = "";
@@ -181,7 +316,7 @@ public class Main {
                         // Manage Reports
                         int c4 = -1;
                         do {
-                            menu.printMenuManageReport();
+                            menu.printMenu(choise.getManageReportMenu());
                             String check4 = input.inputString();
                             if (!validation.CheckValidateNumber(check4)) {
                                 System.out.println("   (!) Try Again");
@@ -231,14 +366,13 @@ public class Main {
                         } while (c4 != 4);
                         break;
                     case 5:
+                        // Quit 
                         System.out.println("       Exit");
                         break;
                     default:
                         System.out.println("   (!) Try Again");
                 }
-
             }
         } while (c != 5);
     }
-
 }

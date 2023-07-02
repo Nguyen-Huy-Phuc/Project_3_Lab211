@@ -1,5 +1,6 @@
 package Model;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,7 +9,7 @@ import java.time.format.DateTimeFormatter;
  * Represents a program or course. Each program has an ID, name, time,
  * registration dates, days, location, cost, and content.
  */
-public class Program {
+public class Program implements Serializable{
 
     private static final String DATE_FORMAT = "dd/MM/yyyy";
     private static final String REGEX_COST = "#######.##$";

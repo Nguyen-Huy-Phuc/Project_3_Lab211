@@ -1,5 +1,6 @@
 package Tool;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
@@ -186,4 +187,23 @@ public class Validation {
         }
     }
 
+    /**
+     * Checks if a file exists at the given file path.
+     *
+     * @param filePath The path of the file to check.
+     * @return {@code true} if the file exists, {@code false} otherwise.
+     */
+    public static boolean isExistFile(String filePath) {
+        boolean flag = false;
+        File f = new File(filePath);
+
+        try {
+            if (f.exists()) {
+                flag = true;
+            }
+        } catch (Exception e) {
+            flag = false;
+        }
+        return flag;
+    }
 }

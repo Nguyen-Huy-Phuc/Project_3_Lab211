@@ -1,10 +1,12 @@
 package Model;
 
+import java.io.Serializable;
+
 /**
  * Represents a student. Each student has an ID, name, major, email, phone,
  * passport, and address.
  */
-public class Student {
+public class Student implements Serializable{
 
     private String id;
     private String name;
